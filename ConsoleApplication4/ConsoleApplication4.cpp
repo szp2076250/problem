@@ -1,30 +1,31 @@
-//problem 
+//±‡“Î ±¥ÌŒÛºÏ≤È
 #include "stdafx.h"
-class a
+
+template<bool> struct ComplitTimeChecker
 {
-	int ma = 0;
+	ComplitTimeChecker(...) {}
 };
-class b : public a
+
+template<> struct ComplitTimeChecker<false> {};
+
+#define  STATIC_CHECK(expr,msg)\
+		{\
+			class ERROR_##msg{};\
+			(void)sizeof(ComplitTimeChecker<(expr)>(new ERROR_##msg()));\
+		}
+
+template<class To,class From>
+To safe_reinterpret_cast(From from)
 {
-	virtual void e() {}
-	int mb = 0;
-};
-class c : public b,public a
-{
-	virtual void e() {}
-	int mc = 0;
-};
-class d : public b
-{
-	virtual void e() {}
-	int md = 0;
-};
+	STATIC_CHECK(sizeof(From)<=sizeof(To),Destination_Type_Too_Narrow);
+	return reinterpret_cast<To>(from);
+}
+
 int main()
-{
-	c * p = new c();
-	d * p2 = new d();
-	a * pa = dynamic_cast<a *>(p); 
-	a * pa2 = dynamic_cast<a *>(p2);
+{ 
+	char a = 1;
+	char * smallPoint = &a;
+	char  c = safe_reinterpret_cast<char >(smallPoint);
     return 0;
 }
 
